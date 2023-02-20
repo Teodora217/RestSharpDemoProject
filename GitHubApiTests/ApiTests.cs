@@ -26,15 +26,15 @@ namespace GitHubApiTests
         public void Test_GetSingleIssue()
         {
 
-            var request = new RestRequest($"{partialUrl}/1", Method.Get);
+            var request = new RestRequest($"{partialUrl}/2", Method.Get);
             var response = this.client.Execute(request);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK), "HTTP Status Code property");
 
             var issue = JsonSerializer.Deserialize<Issue>(response.Content);
 
-            Assert.That(issue.title, Is.EqualTo("First Issue"));
-            Assert.That(issue.number, Is.EqualTo(1));
+            Assert.That(issue.title, Is.EqualTo("Second Issue"));
+            Assert.That(issue.number, Is.EqualTo(2));
         }
 
         [Test]
@@ -138,6 +138,20 @@ namespace GitHubApiTests
             var issue = JsonSerializer.Deserialize<Issue>(response.Content);
 
             return issue;
+        }
+        [TestCase("US", "90210", "United States")]
+        [TestCase("BG", "1000", "Bulgaria")]
+        [TestCase("DE", "01067", "Germany")]
+        public void Test_Zippopotamus_DD(string countryCode, string zipCode, string expectedCountry)
+        {
+            var restClient = new RestClient("http://api.zippopotam.us");
+            var request = new RestRequest(countryCode + "/" + zipCode, Method.Get);
+
+            var response = restClient.Execute(request);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK), "HTTP Status Code property");
+            var location = JsonSerializer.Deserialize<Location>(response.Content);
+
+            Assert.That(location.Country, Is.EqualTo(expectedCountry));
         }
     }
 }
